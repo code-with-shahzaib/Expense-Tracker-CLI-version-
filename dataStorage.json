@@ -1,0 +1,18 @@
+[
+     {
+          "expense": "Dinner",
+          "category": "Food",
+          "description": "I had Dinner Outside Home.",
+          "amount": 2560.0,
+          "date": "2026-02-04",
+          "currency": "PKR"
+     },
+     {
+          "expense": "Print Entrance Slip",
+          "category": "Shopping",
+          "description": "Take a Print Out of Entrance Slip.",
+          "amount": 52.0,
+          "date": "2026-02-04",
+          "currency": "PKR"
+     }
+]
