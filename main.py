@@ -37,7 +37,6 @@ def add_expense():
     if not currency:
         currency = "PKR"
 
-
     while True:
         date_input = input("Enter Date (e.g. YYYY-MM-DD): ")
         try:
@@ -82,6 +81,20 @@ def show_menu():
     print("6. Exit")
 
 
+# Function to View all the Expenses Saved Before.
+def view_all_expenses():
+    expenses_list = load_data()
+    if not expenses_list:
+        print("There is no Expense to Show!!!")
+        return
+
+    for expense in expenses_list:
+        print("================================")
+        print(f"\nExpense Name: {expense['expense']}\nCategory: {expense['category']}\nDescription:"
+              f" {expense['description']}\nAmount: {expense['amount']}\nDate: {expense['date']}\nCurrency: "
+              f"{expense['currency']}\n")
+
+
 while True:
     show_menu()
 
@@ -92,7 +105,7 @@ while True:
             add_expense()
 
         elif choice == 2:
-            print("Feature Coming Soon...")
+            view_all_expenses()
 
         elif choice == 3:
             print("Feature Coming Soon...")
