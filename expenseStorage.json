@@ -1,0 +1,18 @@
+[
+     {
+          "expense": "Dinner",
+          "category": "Food",
+          "description": "I had Dinner",
+          "amount": 500.0,
+          "date": "2026-02-05",
+          "currency": "PKR"
+     },
+     {
+          "expense": "Lunch",
+          "category": "Food",
+          "description": "I had Lunch.",
+          "amount": 26.01,
+          "date": "2026-02-05",
+          "currency": "PKR"
+     }
+]

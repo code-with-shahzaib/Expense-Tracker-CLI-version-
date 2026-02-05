@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime
 
-DATA_FILE = "dataStorage.json"
+expense_FILE = "expenseStorage.json"
 
 # A Helper Function To Take Non-Empty Inputs
 def get_non_empty(prompt):
@@ -12,21 +12,21 @@ def get_non_empty(prompt):
             return value
         print("This field cannot be empty!!")
 
-# Function to Load Saved Data from the File if Exists.
-def load_data():
-    if os.path.exists(DATA_FILE) and os.path.isfile(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
+# Function to Load Saved expense from the File if Exists.
+def load_expense():
+    if os.path.exists(expense_FILE) and os.path.isfile(expense_FILE):
+        with open(expense_FILE, "r") as f:
             try:
                 return json.load(f)
             except json.JSONDecodeError:
-                print("Warning: Data file is corrupt or empty, initializing new data.")
+                print("Warning: expense file is corrupt or empty, initializing new expense.")
                 return []
     return []
 
-# Function to Save Data into JSON File.
-def save_data(data):
-    with open(DATA_FILE, "w") as dataFile:
-        json.dump(data, dataFile, indent=5)
+# Function to Save expense into JSON File.
+def save_expense(expense):
+    with open(expense_FILE, "w") as expenseFile:
+        json.dump(expense, expenseFile, indent=5)
 
 # Function to Add Expense in JSON File.
 def add_expense():
@@ -65,10 +65,37 @@ def add_expense():
         "currency" : currency
     }
 
-    expense_data = load_data()
-    expense_data.append(expense)
-    save_data(expense_data)
+    expense_expense = load_expense()
+    expense_expense.append(expense)
+    save_expense(expense_expense)
     print("Your Expense Saved Successfully!")
+
+
+# Function to View all the Expenses Saved Before.
+def view_all_expenses():
+    expenses_list = load_expense()
+    if not expenses_list:
+        print("There is no Expense to Show!!!")
+        return
+
+    gap = ' ' * 3
+    heading = f"{'Date':10s}{gap}{'Expense':10s}{gap}{'Category':10s}{gap}{'Amount':6s}{gap}{'Currency':9s}"
+
+    print("=" * 60)
+    print(heading)
+    print("-" * 60)
+
+    for expense in expenses_list:
+        actual_expense = (
+                          f"{expense['date']:10s}{gap}"
+                          f"{expense['expense']:10s}{gap}"
+                          f"{expense['category']:10s}{gap}"
+                          f"{expense['amount']:7.2f}{gap}"
+                          f"{expense['currency']:9s}"
+                          )
+        print(actual_expense)
+    print("-" * 60)
+
 
 # Function to Show Main Menu
 def show_menu():
@@ -79,20 +106,6 @@ def show_menu():
     print("4. Expense Summary")
     print("5. Export Report")
     print("6. Exit")
-
-
-# Function to View all the Expenses Saved Before.
-def view_all_expenses():
-    expenses_list = load_data()
-    if not expenses_list:
-        print("There is no Expense to Show!!!")
-        return
-
-    for expense in expenses_list:
-        print("================================")
-        print(f"\nExpense Name: {expense['expense']}\nCategory: {expense['category']}\nDescription:"
-              f" {expense['description']}\nAmount: {expense['amount']}\nDate: {expense['date']}\nCurrency: "
-              f"{expense['currency']}\n")
 
 
 while True:
