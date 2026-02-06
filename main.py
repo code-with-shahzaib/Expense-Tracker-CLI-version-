@@ -96,6 +96,18 @@ def view_all_expenses():
         print(actual_expense)
     print("-" * 60)
 
+# Function to Search Expenses Saved Before.
+"""3.5 Search Expenses
+Must support:
+- Category search
+- Date range search
+"""
+
+def search_expense():
+    pass
+
+
+
 
 # Function to Show Main Menu
 def show_menu():
