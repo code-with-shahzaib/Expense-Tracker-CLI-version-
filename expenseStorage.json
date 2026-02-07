@@ -14,5 +14,13 @@
           "amount": 26.01,
           "date": "2026-02-05",
           "currency": "PKR"
+     },
+     {
+          "expense": "Buy BTC",
+          "category": "Trade",
+          "description": "I trade on BTC.",
+          "amount": 5000.0,
+          "date": "2026-02-06",
+          "currency": "USDT"
      }
 ]

@@ -97,15 +97,35 @@ def view_all_expenses():
     print("-" * 60)
 
 # Function to Search Expenses Saved Before.
-"""3.5 Search Expenses
-Must support:
-- Category search
-- Date range search
-"""
+def search_expenses_by_category(search_keyword):
+   
+    expense_list = load_expense()
+    if not expense_list:
+        print("There is no Expense to Search.")
 
-def search_expense():
-    pass
+    same_category_expenses = []
+    for expense in expense_list:
+        if expense['category'] == search_keyword:
+            same_category_expenses.append({
+                "expense" : expense['expense'],
+                "date" : expense['date'],
+                "amount" : expense['amount']
+                })
 
+    gap = " " * 3
+    heading = f"{'Date':10s}{gap}{'Expense':10s}{gap}{'Amount':6s}"
+    print("=" * 35)
+    print(heading)
+    print("-" * 35)
+
+    for single_expense in same_category_expenses:
+        actual_expense = (
+                         f"{single_expense['date']:10s}{gap}"
+                         f"{single_expense['expense']:10s}"
+                         f"{single_expense['amount']:>6.2f}"
+                         )
+        print(actual_expense)
+    print("-" * 35)
 
 
 
@@ -133,7 +153,8 @@ while True:
             view_all_expenses()
 
         elif choice == 3:
-            print("Feature Coming Soon...")
+            keyword = input("Which Category you want to search: ")
+            search_expenses_by_category(keyword)
 
         elif choice == 4:
             print("Feature Coming Soon...")
@@ -142,7 +163,7 @@ while True:
             print("Feature Coming Soon...")
 
         elif choice == 6:
-            print("Thanks for using Expense Manager.")
+            print("\nThanks for using Expense Manager.")
             break
 
         else:
