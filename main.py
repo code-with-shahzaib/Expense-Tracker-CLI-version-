@@ -127,7 +127,25 @@ def search_expenses_by_category(search_keyword):
         print(actual_expense)
     print("-" * 35)
 
+# Function that Calculates the Total Expense Amount & Highest Expense
+def expense_calulator():
+    expenses = load_expense()
 
+    total_amount = 0
+    highest_expense_amount = expenses[0]['amount']
+    highest_expense_details = []
+
+    for  expense in expenses:
+        total_amount += expense['amount']
+
+        if expense['amount'] > highest_expense_amount:
+            highest_expense_amount = expense['amount']
+            highest_expense_details.append(expense['expense'])
+            highest_expense_details.append(expense['category'])
+            highest_expense_details.append(expense['date'])
+            highest_expense_details.append(expense['currency'])
+
+    return  total_amount, highest_expense_amount, highest_expense_details
 
 # Function to Show Main Menu
 def show_menu():
@@ -157,7 +175,11 @@ while True:
             search_expenses_by_category(keyword)
 
         elif choice == 4:
-            print("Feature Coming Soon...")
+            total_amount, highest_expense_amount, highest_expense_details = expense_calulator()
+            
+            print(f"Total Amount of Your Saved Expenses is: '{total_amount:.2f}'")
+            
+            print(f"The Expense  '{highest_expense_details[0]}' from '{highest_expense_details[1]}' Category is the Highest Expense with Amount of '{highest_expense_amount}' {highest_expense_details[3]} on Date: '{highest_expense_details[2]}'")
 
         elif choice == 5:
             print("Feature Coming Soon...")
