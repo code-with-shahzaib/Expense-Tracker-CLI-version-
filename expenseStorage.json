@@ -22,5 +22,21 @@
           "amount": 5000.0,
           "date": "2026-02-06",
           "currency": "USDT"
+     },
+     {
+          "expense": "Buy Mobile",
+          "category": "Shopping",
+          "description": "I  bought a Mobile",
+          "amount": 45000.0,
+          "date": "2026-02-09",
+          "currency": "PKR"
+     },
+     {
+          "expense": "House Rent",
+          "category": "Rent",
+          "description": "Pay House Rent to Owner.",
+          "amount": 8000.0,
+          "date": "2026-02-09",
+          "currency": "PKR"
      }
 ]

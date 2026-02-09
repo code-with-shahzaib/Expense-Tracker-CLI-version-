@@ -2,9 +2,10 @@ import json
 import os
 from datetime import datetime
 
-expense_FILE = "expenseStorage.json"
+EXPENSE_FILE = "expenseStorage.json"
 
-# A Helper Function To Take Non-Empty Inputs
+# ---------------- Helper Functions ----------------
+
 def get_non_empty(prompt):
     while True:
         value = input(prompt).strip()
@@ -12,157 +13,168 @@ def get_non_empty(prompt):
             return value
         print("This field cannot be empty!!")
 
-# Function to Load Saved expense from the File if Exists.
+
+def get_valid_date(prompt):
+    while True:
+        date_input = input(prompt)
+        try:
+            return datetime.strptime(date_input, "%Y-%m-%d")
+        except ValueError:
+            print("Invalid Date Format. Use YYYY-MM-DD")
+
+
+# ---------------- File Handling ----------------
+
 def load_expense():
-    if os.path.exists(expense_FILE) and os.path.isfile(expense_FILE):
-        with open(expense_FILE, "r") as f:
+    if os.path.exists(EXPENSE_FILE):
+        with open(EXPENSE_FILE, "r") as f:
             try:
                 return json.load(f)
             except json.JSONDecodeError:
-                print("Warning: expense file is corrupt or empty, initializing new expense.")
                 return []
     return []
 
-# Function to Save expense into JSON File.
-def save_expense(expense):
-    with open(expense_FILE, "w") as expenseFile:
-        json.dump(expense, expenseFile, indent=5)
 
-# Function to Add Expense in JSON File.
-def add_expense():
-    expense_name = get_non_empty("Enter Your Expense: ")
-    category = get_non_empty("Enter Expense Category (e.g. Food, Transprot,..): ")
-    description = get_non_empty("Enter some Description of Expense: ")
-    currency = input("Enter Expense Currency (e.g. PKR, INR): ").strip().upper()
-    if not currency:
-        currency = "PKR"
-
-    while True:
-        date_input = input("Enter Date (e.g. YYYY-MM-DD): ")
-        try:
-            datetime.strptime(date_input, "%Y-%m-%d")
-            date = date_input
-            break
-        except ValueError:
-            print("Invalid Date Format. (Enter YYYY-MM-DD)")
-
-    while True:
-        try:
-            amount = float(input("Enter Amount of Expense: "))
-            if amount <= 0:
-                print("Amount must be positive.")
-                continue
-            break
-        except ValueError:
-            print("Enter a valid number.")
-
-    expense = {
-        "expense" : expense_name,
-        "category" : category,
-        "description" : description,
-        "amount" : amount,
-        "date" : date,
-        "currency" : currency
-    }
-
-    expense_expense = load_expense()
-    expense_expense.append(expense)
-    save_expense(expense_expense)
-    print("Your Expense Saved Successfully!")
+def save_expense(expenses):
+    with open(EXPENSE_FILE, "w") as f:
+        json.dump(expenses, f, indent=5)
 
 
-# Function to View all the Expenses Saved Before.
-def view_all_expenses():
-    expenses_list = load_expense()
-    if not expenses_list:
-        print("There is no Expense to Show!!!")
+# ---------------- Table Utilities (AUTO-SIZED) ----------------
+
+COLUMNS = [
+    ("date", "Date"),
+    ("expense", "Expense"),
+    ("category", "Category"),
+    ("amount", "Amount"),
+    ("currency", "Currency")
+]
+
+
+def calculate_column_widths(expenses):
+    widths = {}
+
+    for key, title in COLUMNS:
+        max_width = len(title)
+        for expense in expenses:
+            value = expense.get(key, "")
+            value = f"{value:.2f}" if isinstance(value, float) else str(value)
+            max_width = max(max_width, len(value))
+        widths[key] = max_width
+
+    return widths
+
+
+def print_table(expenses):
+    if not expenses:
+        print("No expenses to show.")
         return
 
-    gap = ' ' * 3
-    heading = f"{'Date':10s}{gap}{'Expense':10s}{gap}{'Category':10s}{gap}{'Amount':6s}{gap}{'Currency':9s}"
+    widths = calculate_column_widths(expenses)
+    gap = "   "
+    total_width = sum(widths.values()) + len(COLUMNS) * len(gap)
 
-    print("=" * 60)
-    print(heading)
-    print("-" * 60)
+    print("=" * total_width)
 
-    for expense in expenses_list:
-        actual_expense = (
-                          f"{expense['date']:10s}{gap}"
-                          f"{expense['expense']:10s}{gap}"
-                          f"{expense['category']:10s}{gap}"
-                          f"{expense['amount']:7.2f}{gap}"
-                          f"{expense['currency']:9s}"
-                          )
-        print(actual_expense)
-    print("-" * 60)
+    header = ""
+    for key, title in COLUMNS:
+        header += f"{title:<{widths[key]}}{gap}"
+    print(header)
 
-# Function to Search Expenses Saved Before.
-def search_expenses_by_category(search_keyword):
-   
-    expense_list = load_expense()
-    if not expense_list:
-        print("There is no Expense to Search.")
+    print("-" * total_width)
 
-    same_category_expenses = []
-    for expense in expense_list:
-        if expense['category'] == search_keyword:
-            same_category_expenses.append({
-                "expense" : expense['expense'],
-                "date" : expense['date'],
-                "amount" : expense['amount']
-                })
+    for expense in expenses:
+        row = ""
+        for key, _ in COLUMNS:
+            value = expense.get(key, "")
+            value = f"{value:.2f}" if isinstance(value, float) else value
+            row += f"{value:<{widths[key]}}{gap}"
+        print(row)
 
-    gap = " " * 3
-    heading = f"{'Date':10s}{gap}{'Expense':10s}{gap}{'Amount':6s}"
-    print("=" * 35)
-    print(heading)
-    print("-" * 35)
+    print("=" * total_width)
 
-    for single_expense in same_category_expenses:
-        actual_expense = (
-                         f"{single_expense['date']:10s}{gap}"
-                         f"{single_expense['expense']:10s}"
-                         f"{single_expense['amount']:>6.2f}"
-                         )
-        print(actual_expense)
-    print("-" * 35)
 
-# Function that Calculates the Total Expense Amount & Highest Expense
-def expense_calulator():
+# ---------------- Core Features ----------------
+
+def add_expense():
+    expense = {
+        "expense": get_non_empty("Enter Expense: "),
+        "category": get_non_empty("Enter Category: "),
+        "description": get_non_empty("Enter Description: "),
+        "amount": float(input("Enter Amount: ")),
+        "date": get_valid_date("Enter Date (YYYY-MM-DD): ").strftime("%Y-%m-%d"),
+        "currency": input("Currency (PKR default): ").strip().upper() or "PKR"
+    }
+
+    expenses = load_expense()
+    expenses.append(expense)
+    save_expense(expenses)
+    print("Expense Saved Successfully!")
+
+
+def view_all_expenses():
+    print_table(load_expense())
+
+
+def search_by_category():
+    keyword = input("Enter category to search: ").strip().lower()
     expenses = load_expense()
 
-    total_amount = 0
-    highest_expense_amount = expenses[0]['amount']
-    highest_expense_details = []
+    results = [e for e in expenses if e["category"].lower() == keyword]
+    print_table(results)
 
-    for  expense in expenses:
-        total_amount += expense['amount']
 
-        if expense['amount'] > highest_expense_amount:
-            highest_expense_amount = expense['amount']
-            highest_expense_details.append(expense['expense'])
-            highest_expense_details.append(expense['category'])
-            highest_expense_details.append(expense['date'])
-            highest_expense_details.append(expense['currency'])
+def search_by_date_range():
+    expenses = load_expense()
+    if not expenses:
+        print("No expenses found.")
+        return
 
-    return  total_amount, highest_expense_amount, highest_expense_details
+    start_date = get_valid_date("Enter Start Date (YYYY-MM-DD): ")
+    end_date = get_valid_date("Enter End Date (YYYY-MM-DD): ")
 
-# Function to Show Main Menu
+    results = []
+    for e in expenses:
+        expense_date = datetime.strptime(e["date"], "%Y-%m-%d")
+        if start_date <= expense_date <= end_date:
+            results.append(e)
+
+    print_table(results)
+
+
+def expense_summary():
+    expenses = load_expense()
+    if not expenses:
+        print("No expenses available.")
+        return
+
+    total_amount = sum(e["amount"] for e in expenses)
+    highest = max(expenses, key=lambda x: x["amount"])
+
+    print(f"\nTotal Expense Amount: {total_amount:.2f}")
+    print(
+        f"Highest Expense: {highest['expense']} | "
+        f"{highest['amount']} {highest['currency']} | "
+        f"{highest['date']} | {highest['category']}"
+    )
+
+
+# ---------------- Menu ----------------
+
 def show_menu():
     print("\n====== Main Menu ======")
     print("1. Add Expense")
     print("2. View All Expenses")
     print("3. Search Expenses")
     print("4. Expense Summary")
-    print("5. Export Report")
-    print("6. Exit")
+    print("5. Exit")
 
 
 while True:
     show_menu()
 
     try:
-        choice = int(input("Select option (1-6): "))
+        choice = int(input("Select option (1-5): "))
 
         if choice == 1:
             add_expense()
@@ -171,25 +183,26 @@ while True:
             view_all_expenses()
 
         elif choice == 3:
-            keyword = input("Which Category you want to search: ")
-            search_expenses_by_category(keyword)
+            print("\n1. Search by Category")
+            print("2. Search by Date Range")
+            sub = input("Choose option: ")
+
+            if sub == "1":
+                search_by_category()
+            elif sub == "2":
+                search_by_date_range()
+            else:
+                print("Invalid search option.")
 
         elif choice == 4:
-            total_amount, highest_expense_amount, highest_expense_details = expense_calulator()
-            
-            print(f"Total Amount of Your Saved Expenses is: '{total_amount:.2f}'")
-            
-            print(f"The Expense  '{highest_expense_details[0]}' from '{highest_expense_details[1]}' Category is the Highest Expense with Amount of '{highest_expense_amount}' {highest_expense_details[3]} on Date: '{highest_expense_details[2]}'")
+            expense_summary()
 
         elif choice == 5:
-            print("Feature Coming Soon...")
-
-        elif choice == 6:
             print("\nThanks for using Expense Manager.")
             break
 
         else:
-            print("Invalid option. Choose between 1-6.")
+            print("Invalid option.")
 
     except ValueError:
         print("Invalid input. Enter numbers only.")
