@@ -152,6 +152,7 @@ def expense_summary():
     highest = max(expenses, key=lambda x: x["amount"])
 
     print(f"\nTotal Expense Amount: {total_amount:.2f}")
+    
     print(
         f"Highest Expense: {highest['expense']} | "
         f"{highest['amount']} {highest['currency']} | "
@@ -189,7 +190,9 @@ while True:
 
             if sub == "1":
                 search_by_category()
+
             elif sub == "2":
+
                 search_by_date_range()
             else:
                 print("Invalid search option.")
