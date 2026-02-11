@@ -38,5 +38,13 @@
           "amount": 8000.0,
           "date": "2026-02-09",
           "currency": "PKR"
+     },
+     {
+          "expense": "Course Enrollement",
+          "category": "Educational Spending",
+          "description": "Bought Course From Udemy",
+          "amount": 2600.0,
+          "date": "2026-02-11",
+          "currency": "PKR"
      }
 ]
